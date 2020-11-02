@@ -1,6 +1,7 @@
 #r "Newtonsoft.Json"
 
 using System.Net;
+using System.Environment;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
@@ -13,13 +14,13 @@ public static async Task<object> Run(HttpRequest req, ILogger log)
     string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
     log.LogInformation("Request body: " + requestBody);
     dynamic data = JsonConvert.DeserializeObject(requestBody);
-    string extension_Captchatext = data?.extension_aaebe32dff39461b940c8245c5b7dc33_Captchatext;
+    string extension_Captchatext = data?.extension_aaebe32dff39461b940c8245c5b7dc33_Captchatext; //extension app-id
     bool verified_captcha = !string.IsNullOrEmpty(extension_Captchatext);
 
     using(var client = new HttpClient())
     {
         Dictionary<string, string> dictionary = new Dictionary<string, string>();
-        dictionary.Add("secret", "secret_key");
+        dictionary.Add("secret", System.Environment.GetEnvironmentVariable("SECRET_KEY"));
         dictionary.Add("response", extension_Captchatext);
         var formContent = new FormUrlEncodedContent(dictionary);
 
